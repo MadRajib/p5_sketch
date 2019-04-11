@@ -400,7 +400,7 @@ button {
 
 <body>
 
-  <div id='myContainer' name='<?php if(isset($_GET["name"])){ echo str_replace("22"," ",$_GET["name"]);}else{echo "Yes_Painter";}?>' >
+  <div id='myContainer' name='MadRajib' >
   </div>
 </body>
 </html>
