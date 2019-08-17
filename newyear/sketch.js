@@ -16,7 +16,8 @@ function setup() {
    wd = cont.offsetWidth;
    ht = cont.offsetHeight;
 
-   str = cont.getAttribute("name");
+//    str = cont.getAttribute("name");
+   str = "Taruna";
    str_w = textWidth(str);
    if(wd>2000){
      w=2000;
