@@ -20,7 +20,7 @@ function setup(){
   song.loop();
   // patch the AudioIn
 }
-function mousePressed() { getAudioContext().resume() }
+function mousePressed() { userStartAudio() }
 function draw() {
   background(51);
 
