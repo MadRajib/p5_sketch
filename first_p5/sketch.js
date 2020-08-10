@@ -20,7 +20,16 @@ function setup(){
   song.loop();
   // patch the AudioIn
 }
-function mousePressed() { userStartAudio() }
+function mousePressed() {
+  if (song.isPlaying()) {
+    // .isPlaying() returns a boolean
+    song.stop();
+//     background(255, 0, 0);
+  } else {
+    song.play();
+//     background(0, 255, 0);
+  }
+}
 function draw() {
   background(51);
 
