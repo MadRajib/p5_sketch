@@ -10,6 +10,8 @@ let fillerImagesBrigthness = [];
 let brightImages = new Array(256);
 let mainImageLoaded = false;
 
+let loader;
+
 function setup() {
   slider = createSlider(0, 100, scaleFactor, 10);
   slider.position(10, 10);
@@ -66,6 +68,11 @@ function repaint() {
 function loadMainImage() {
   fileInput = createFileInput(handleMainImage).attribute("accept", "image/*");
   fileInput.position(10, 50);
+  mainImage = null;
+  fillerImages = [];
+  fillerImagesBrigthness = [];
+  brightImages = new Array(256);
+  mainImageLoaded = false;
 }
 
 function loadMultipleImages() {
@@ -84,6 +91,8 @@ function handleFileSelect(evt) {
   var files = evt.target.files;
   let totalImages = files.length;
   let loadedImages = 0;
+  displayLoader();
+
   // Show some properties
   for (var i = 0, f; (f = files[i]); i++) {
     let urlOfImageFile = URL.createObjectURL(f);
@@ -126,6 +135,7 @@ function handleFileSelect(evt) {
         }
 
         console.log("done");
+        hideLoader();
 
         smallerImg.loadPixels();
         for (let x = 0; x < w; x++) {
@@ -223,4 +233,13 @@ function handleMainImage(file) {
   } else {
     alert("Please upload a valid image file.");
   }
+}
+
+function displayLoader() {
+  loader = createDiv("Loading...").style("font-size", "20px").style("color", "#555");
+  loader.position(width / 2 - 50, height / 2 - 10); // Center the loader
+}
+
+function hideLoader() {
+  loader.hide();
 }
