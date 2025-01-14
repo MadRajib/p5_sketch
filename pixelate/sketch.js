@@ -11,6 +11,8 @@ let brightImages = new Array(256);
 let mainImageLoaded = false;
 
 let loader;
+let totalImages = 0;
+let loadedImages = 0;
 
 function setup() {
   slider = createSlider(0, 100, scaleFactor, 10);
@@ -89,8 +91,8 @@ function loadMultipleImages() {
 function handleFileSelect(evt) {
   // A FileList
   var files = evt.target.files;
-  let totalImages = files.length;
-  let loadedImages = 0;
+  totalImages = files.length;
+  loadedImages = 0;
   displayLoader();
 
   // Show some properties
@@ -122,7 +124,10 @@ function handleFileSelect(evt) {
       fillerImages.push(mg);
       loadedImages++;
 
+      loader.html("Loading Images..." + loadedImages+"/" +totalImages);
+
       if (loadedImages == totalImages) {
+        loader.html("Processing Images ...");
         for (let i = 0; i < brightImages.length; i++) {
           let record = 256;
           for (let j = 0; j < fillerImagesBrigthness.length; j++) {
@@ -133,8 +138,7 @@ function handleFileSelect(evt) {
             }
           }
         }
-
-        console.log("done");
+        
         hideLoader();
 
         smallerImg.loadPixels();
@@ -145,7 +149,6 @@ function handleFileSelect(evt) {
             let g = smallerImg.pixels[index + 1];
             let b = smallerImg.pixels[index + 2];
             let brightness_index = r * 0.299 + g * 0.587 + b * 0.114;
-            console.log(brightImages[int(brightness_index)]);
 
             image(
               brightImages[int(brightness_index)],
@@ -236,8 +239,8 @@ function handleMainImage(file) {
 }
 
 function displayLoader() {
-  loader = createDiv("Loading...").style("font-size", "20px").style("color", "#555");
-  loader.position(width / 2 - 50, height / 2 - 10); // Center the loader
+  loader = createDiv("Loading Images..." + loadedImages+"/" +totalImages).style("font-size", "40px").style("color", "#FFF");
+  loader.position(10, 150); // Center the loader
 }
 
 function hideLoader() {
