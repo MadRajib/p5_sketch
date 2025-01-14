@@ -7,4 +7,5 @@
 1. [newyear](https://madrajib.github.io/p5_sketch/newyear/)
 1. [particle_network](https://madrajib.github.io/p5_sketch/particle_network/)
 1. [perlin_noise](https://madrajib.github.io/p5_sketch/perlin_noise/)
+1. [pixelate](https://madrajib.github.io/p5_sketch/pixelate/) 
 
