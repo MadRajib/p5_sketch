@@ -8,6 +8,7 @@ let mainImage;
 let fillerImages = [];
 let fillerImagesBrigthness = [];
 let brightImages = new Array(256);
+let mainImageLoaded = false;
 
 function setup() {
   slider = createSlider(0, 100, scaleFactor, 1);
@@ -15,15 +16,33 @@ function setup() {
   slider.size(100);
   slider.input(repaint);
 
+  textElement = createDiv('Scale: ' + slider.value());
+  textElement.position(slider.x + slider.width + 10, slider.y);
+
   textAlign(CENTER, CENTER);
   textSize(16);
   loadMainImage();
 }
 
 function repaint() {
-  let g = slider.value();
-  scaleFactor = g;
+  scaleFactor = slider.value();
+  textElement.html('Scale: ' + slider.value());
   background(0)
+
+  if (!mainImageLoaded) return;
+
+  smallerImg = createImage(w, h);
+  smallerImg.copy(
+    mainImage,
+    0,
+    0,
+    mainImage.width,
+    mainImage.height,
+    0,
+    0,
+    w,
+    h
+  );
 
   smallerImg.loadPixels();
   for (let x = 0; x < w; x++) {
@@ -42,7 +61,8 @@ function repaint() {
 }
 
 function loadMainImage() {
-  createFileInput(handleMainImage).attribute("accept", "image/*");
+  fileInput = createFileInput(handleMainImage).attribute("accept", "image/*");
+  fileInput.position(10, 50);
 }
 
 function loadMultipleImages() {
@@ -53,6 +73,7 @@ function loadMultipleImages() {
   fileInput.attribute("multiple", "");
   // If a file is selected this event will be triggered
   fileInput.elt.addEventListener("change", handleFileSelect, false);
+  fileInput.position(10, 110);
 }
 
 function handleFileSelect(evt) {
@@ -158,24 +179,26 @@ function handleAdditionalImages(file) {
 
 function handleMainImage(file) {
   if (file.type === "image") {
-    mainImage = loadImage(file.data, () => {
-      w = mainImage.width / scaleFactor;
-      h = mainImage.height / scaleFactor;
+    loadImage(file.data, (mg) => {
+      mainImage = mg
+      mainImageLoaded = true;
+      w = mg.width / scaleFactor;
+      h = mg.height / scaleFactor;
 
       smallerImg = createImage(w, h);
       smallerImg.copy(
-        mainImage,
+        mg,
         0,
         0,
-        mainImage.width,
-        mainImage.height,
+        mg.width,
+        mg.height,
         0,
         0,
         w,
         h
       );
 
-      let canvas = createCanvas(mainImage.width, mainImage.height);
+      let canvas = createCanvas(mg.width, mg.height);
 
       smallerImg.loadPixels();
       for (let x = 0; x < w; x++) {
