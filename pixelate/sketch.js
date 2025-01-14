@@ -9,6 +9,7 @@ let fillerImages = [];
 let fillerImagesBrigthness = [];
 let brightImages = new Array(256);
 let mainImageLoaded = false;
+let avgColors = [];
 
 let loader;
 let totalImages = 0;
@@ -91,58 +92,42 @@ function loadMultipleImages() {
 function handleFileSelect(evt) {
   // A FileList
   var files = evt.target.files;
-  totalImages = files.length;
+  totalImages = 0;
   loadedImages = 0;
   displayLoader();
+  valid_img_ext = ["png", "jpg", "jpeg"]
+
+  for (var i = 0; i < files.length; i++) {
+    let tp = files[i].type.split('/')[1];
+    if (valid_img_ext.includes(tp)) {
+      totalImages++;
+    }
+  }
 
   // Show some properties
   for (var i = 0, f; (f = files[i]); i++) {
+    let tp = files[i].type.split('/')[1];
+    if (!valid_img_ext.includes(tp))
+      continue
+
     let urlOfImageFile = URL.createObjectURL(f);
     loadImage(urlOfImageFile, (mg) => {
       let totalBrightness = 0;
+
       mg.resize(scaleFactor, scaleFactor);
-      let pixelCount = mg.width * mg.height;
 
-      mg.loadPixels();
-
-      // Loop through every pixel in the image
-      for (let x = 0; x < mg.width; x++) {
-        for (let y = 0; y < mg.height; y++) {
-          let index = (x + y * mg.width) * 4; // Pixel index in the array
-          let r = mg.pixels[index]; // Red value
-          let g = mg.pixels[index + 1]; // Green value
-          let b = mg.pixels[index + 2]; // Blue value
-
-          // Calculate brightness (using luminance formula)
-          let brightness = r * 0.299 + g * 0.587 + b * 0.114;
-          totalBrightness += brightness;
-        }
-      }
-
-      // Calculate the average brightness
-      avgBrightness = totalBrightness / pixelCount;
-      fillerImagesBrigthness.push(avgBrightness);
-
+      avgColors.push(calculateAvgColor(mg));
       fillerImages.push(mg);
+
       loadedImages++;
 
       loader.html("Loading Images..." + loadedImages+"/" +totalImages);
 
       if (loadedImages == totalImages) {
-        loader.html("Processing Images ...");
-        for (let i = 0; i < brightImages.length; i++) {
-          let record = 256;
-          for (let j = 0; j < fillerImagesBrigthness.length; j++) {
-            let diff = abs(i - fillerImagesBrigthness[j]);
-            if (diff < record) {
-              record = diff;
-              brightImages[i] = fillerImages[j];
-            }
-          }
-        }
-        
-        hideLoader();
 
+        loader.html("Processing Images ...");
+
+        
         smallerImg.loadPixels();
         for (let x = 0; x < w; x++) {
           for (let y = 0; y < h; y++) {
@@ -150,47 +135,22 @@ function handleFileSelect(evt) {
             let r = smallerImg.pixels[index];
             let g = smallerImg.pixels[index + 1];
             let b = smallerImg.pixels[index + 2];
-            let brightness_index = r * 0.299 + g * 0.587 + b * 0.114;
-
-            image(
-              brightImages[int(brightness_index)],
-              x * scaleFactor,
-              y * scaleFactor,
-              scaleFactor,
-              scaleFactor
-            );
+            // let c = color(r, g, b)
+            let brightness_index = findNearestImage([r, g, b], avgColors);
+            if (fillerImages[brightness_index] !== undefined)
+              image(
+                fillerImages[brightness_index],
+                x * scaleFactor,
+                y * scaleFactor,
+                scaleFactor,
+                scaleFactor
+              );
           }
         }
+
+        hideLoader();
+
       }
-    });
-  }
-}
-
-function handleAdditionalImages(file) {
-  if (file.type === "image") {
-    let mg = loadImage(file.data, () => {
-      let totalBrightness = 0;
-      let pixelCount = mg.width * mg.height;
-
-      mg.loadPixels();
-
-      // Loop through every pixel in the image
-      for (let x = 0; x < mg.width; x++) {
-        for (let y = 0; y < mg.height; y++) {
-          let index = (x + y * mg.width) * 4; // Pixel index in the array
-          let r = mg.pixels[index]; // Red value
-          let g = mg.pixels[index + 1]; // Green value
-          let b = mg.pixels[index + 2]; // Blue value
-
-          // Calculate brightness (using luminance formula)
-          let brightness = r * 0.299 + g * 0.587 + b * 0.114;
-          totalBrightness += brightness;
-        }
-      }
-
-      // Calculate the average brightness
-      avgBrightness = totalBrightness / pixelCount;
-      brightnessImage[int(avgBrightness)] = mg;
     });
   }
 }
@@ -247,4 +207,45 @@ function displayLoader() {
 
 function hideLoader() {
   loader.hide();
+}
+
+
+function calculateAvgColor(img) {
+  img.loadPixels();
+  let totalR = 0, totalG = 0, totalB = 0;
+  let pixelCount = img.width * img.height;
+
+  for (let i = 0; i < img.pixels.length; i += 4) {
+    totalR += img.pixels[i];     // Red
+    totalG += img.pixels[i + 1]; // Green
+    totalB += img.pixels[i + 2]; // Blue
+  }
+
+  // Return the average R, G, B as an array
+  return [totalR / pixelCount, totalG / pixelCount, totalB / pixelCount];
+}
+
+// Function to find the nearest image based on average color
+function findNearestImage(targetColor, colors) {
+  let minDistance = Infinity;
+  let nearestIndex = -1;
+
+  for (let i = 0; i < colors.length; i++) {
+    let dist = calculateColorDistance(targetColor, colors[i]);
+    if (dist < minDistance) {
+      minDistance = dist;
+      nearestIndex = i;
+    }
+  }
+
+  return nearestIndex;
+}
+
+// Function to calculate Euclidean distance in RGB space
+function calculateColorDistance(color1, color2) {
+  return sqrt(
+    pow(color1[0] - color2[0], 2) +
+    pow(color1[1] - color2[1], 2) +
+    pow(color1[2] - color2[2], 2)
+  );
 }
