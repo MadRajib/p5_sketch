@@ -11,7 +11,7 @@ let brightImages = new Array(256);
 let mainImageLoaded = false;
 
 function setup() {
-  slider = createSlider(0, 100, scaleFactor, 1);
+  slider = createSlider(0, 100, scaleFactor, 10);
   slider.position(10, 10);
   slider.size(100);
   slider.input(repaint);
@@ -30,6 +30,9 @@ function repaint() {
   background(0)
 
   if (!mainImageLoaded) return;
+
+  w = floor(mainImage.width / scaleFactor) ;
+  h = floor(mainImage.height / scaleFactor);
 
   smallerImg = createImage(w, h);
   smallerImg.copy(
