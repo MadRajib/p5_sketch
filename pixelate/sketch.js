@@ -17,7 +17,7 @@ let loadedImages = 0;
 function setup() {
   slider = createSlider(0, 100, scaleFactor, 10);
   slider.position(10, 10);
-  slider.size(100);
+  slider.size(200);
   slider.input(repaint);
 
   textElement = createDiv('Scale: ' + slider.value());
@@ -30,7 +30,7 @@ function setup() {
 
 function repaint() {
   scaleFactor = slider.value();
-  textElement.html('Scale: ' + slider.value());
+  textElement.html('Pixalte: ' + slider.value());
   background(0)
 
   if (!mainImageLoaded) return;
@@ -100,6 +100,7 @@ function handleFileSelect(evt) {
     let urlOfImageFile = URL.createObjectURL(f);
     loadImage(urlOfImageFile, (mg) => {
       let totalBrightness = 0;
+      mg.resize(scaleFactor, scaleFactor);
       let pixelCount = mg.width * mg.height;
 
       mg.loadPixels();
@@ -121,6 +122,7 @@ function handleFileSelect(evt) {
       // Calculate the average brightness
       avgBrightness = totalBrightness / pixelCount;
       fillerImagesBrigthness.push(avgBrightness);
+
       fillerImages.push(mg);
       loadedImages++;
 
