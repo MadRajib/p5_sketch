@@ -1,0 +1,60 @@
+html, body {
+  height: 100%;
+}
+
+html {
+  display: table;
+  margin: auto;
+}
+
+body {
+  display: table-cell;
+  vertical-align: middle;
+  
+}
+
+.instructions{
+  margin: auto;
+  margin-bottom: 20px;
+  width: 50%;
+  border: 3px solid green;
+  padding: 10px;
+}
+
+.game-grid {
+  width: 400px;
+  height: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #2b2d42;
+}
+
+.game-grid .cell {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-grid .outer-cell{
+  border: #8d99ae;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  background-color: #8d99ae;
+}
+
+.game-grid .b{
+  background-color: #2b2d42;
+  /* background-color: azure; */
+}
+
+.game-grid .v{
+  background-color:  #2b2d42;
+}
+
+.game-grid .checked{
+  background-color:#8d99ae;
+}

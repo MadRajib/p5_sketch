@@ -7,5 +7,10 @@
 1. [newyear](https://madrajib.github.io/p5_sketch/newyear/)
 1. [particle_network](https://madrajib.github.io/p5_sketch/particle_network/)
 1. [perlin_noise](https://madrajib.github.io/p5_sketch/perlin_noise/)
-1. [pixelate](https://madrajib.github.io/p5_sketch/pixelate/) 
-
+1. [pixelate](https://madrajib.github.io/p5_sketch/pixelate/)
+1. [Slide Puzzle Game](https://madrajib.github.io/p5_sketch/slide_puzzle_game/)
+1. [Mine sweeper](https://madrajib.github.io/p5_sketch/minesweeper/)
+1. [Chain Reaction](https://madrajib.github.io/p5_sketch/chain_reaction/frontend/)
+1. [Remember](https://madrajib.github.io/p5_sketch/remember/)
+1. [Angrubangru](https://madrajib.github.io/p5_sketch/angrubangru/)
+1. [VineStrings](https://madrajib.github.io/p5_sketch/vineStrings/)
