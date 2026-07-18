@@ -1,11 +1,11 @@
-const len = 10;
-const balls_timeout = 1000;
-const bullet_timeout = 100;
+const LEN = 10;
+const TRAIL_TIMEOUT = 1000;
+const BULLET_TIMEOUT = 100;
 
-let trails = new Array(len).fill(0);
-let bullets_trails = new Array(len).fill(0);
+let trails = new Array(LEN).fill(0);
+let bullets = new Array(LEN).fill(0);
 
-let ball_lastUpdate = 0;
+let trail_lastUpdate = 0;
 let bullet_lastUpdate = 0;
 
 /* Initial staring index */
@@ -27,12 +27,12 @@ function setup() {
 function render() {
 
   background(220);
-  for (let index = 0; index < len; index++) {
+  for (let index = 0; index < LEN; index++) {
     noFill();
     rect(30, index * 55, 55, 55);
 
-    if (bullets_trails[index] > 0) {
-      switch (bullets_trails[index]) {
+    if (bullets[index] > 0) {
+      switch (bullets[index]) {
         case 1:
           fill(255, 0, 0);
           break;
@@ -63,13 +63,34 @@ function render() {
   }
 }
 
+function reset() {
+  trails.fill(0);
+  bullets.fill(0);
+  
+  front = 0;
+  
+  trails[0] = floor(random(3)) + 1; 
+  
+  delay(1000); 
+  
+  trail_lastUpdate = millis();
+  bullet_lastUpdate = millis();
+}
+
+function insert_bullet(c) {
+  if (bullets[LEN - 1] > 0)
+    return;
+
+  bullets[LEN - 1] = c;
+}
+
 function draw() {
   render()
   let current = millis();
 
-  if (current - ball_lastUpdate >= balls_timeout) {
+  if (current - trail_lastUpdate >= TRAIL_TIMEOUT) {
 
-    if (front + 1 == len) {
+    if (front + 1 == LEN) {
       noLoop();
     }
 
@@ -80,29 +101,29 @@ function draw() {
     trails[0] = floor(random(3)) + 1;
     front++;
 
-    ball_lastUpdate = millis();
+    trail_lastUpdate = millis();
 
   }
 
-  if (current - bullet_lastUpdate >= bullet_timeout) {
-    for (let index = 1; index < len; index++) {
-      if (bullets_trails[index] > 0) {
-        bullets_trails[index - 1] = bullets_trails[index];
-        bullets_trails[index] = 0;
+  if (current - bullet_lastUpdate >= BULLET_TIMEOUT) {
+    for (let index = 1; index < LEN; index++) {
+      if (bullets[index] > 0) {
+        bullets[index - 1] = bullets[index];
+        bullets[index] = 0;
       }
     }
 
     bullet_lastUpdate = millis();
   }
 
-  for (let index = 0; index < len; index++) {
-    if (bullets_trails[index] > 0 && index <= front) {
-      if (trails[front] === bullets_trails[index]) {
-        bullets_trails[index] = 0;
+  for (let index = 0; index < LEN; index++) {
+    if (bullets[index] > 0 && index <= front) {
+      if (trails[front] === bullets[index]) {
+        bullets[index] = 0;
         trails[front] = 0;
         front--;
       } else {
-        bullets_trails[index] = 0;
+        bullets[index] = 0;
       }
     }
   }
@@ -110,16 +131,14 @@ function draw() {
 }
 
 function keyPressed() {
-
   console.log("pressed");
-  if (bullets_trails[len - 1] == 0) {
-    if (key == 'r') {
-      bullets_trails[len - 1] = 1;
-    } else if (key == 'g') {
-      bullets_trails[len - 1] = 2;
-    } else if (key == 'b') {
-      bullets_trails[len - 1] = 3;
-    }
+
+  if (key == 'r') {
+    insert_bullet(1);
+  } else if (key == 'g') {
+    insert_bullet(2);
+    bullets[LEN - 1] = 2;
+  } else if (key == 'b') {
+    insert_bullet(3);
   }
-  
 }
