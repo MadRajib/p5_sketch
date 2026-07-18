@@ -14,3 +14,4 @@
 1. [Remember](https://madrajib.github.io/p5_sketch/remember/)
 1. [Angrubangru](https://madrajib.github.io/p5_sketch/angrubangru/)
 1. [VineStrings](https://madrajib.github.io/p5_sketch/vineStrings/)
+1. [Snake Trail](https://madrajib.github.io/p5_sketch/snake_trail/)
