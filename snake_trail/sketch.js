@@ -15,13 +15,15 @@ let off = 0;
 let cir_off = 26;
 let indx = 0;
 
+const sleep = ms => new Promise(res => setTimeout(res, ms));
+
 function setup() {
   let canvas = createCanvas(115, 550);
   canvas.parent('canvas-container');
 
   lastTime = millis();
   trails[0] = floor(random(3)) + 1;
-  console.log(trails[0])
+
 }
 
 function render() {
@@ -63,18 +65,20 @@ function render() {
   }
 }
 
-function reset() {
+async function reset() {
+  noLoop();
   trails.fill(0);
   bullets.fill(0);
   
   front = 0;
   
-  trails[0] = floor(random(3)) + 1; 
-  
-  delay(1000); 
+  trails[0] = floor(random(3)) + 1;
+  await sleep(1000);
   
   trail_lastUpdate = millis();
   bullet_lastUpdate = millis();
+  
+  loop();
 }
 
 function insert_bullet(c) {
@@ -91,7 +95,8 @@ function draw() {
   if (current - trail_lastUpdate >= TRAIL_TIMEOUT) {
 
     if (front + 1 == LEN) {
-      noLoop();
+      reset();
+      return;
     }
 
     for (let index = front + 1; index > 0; index--) {
