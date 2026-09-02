@@ -129,7 +129,7 @@ function mousePressed() {
   }
 
   if (selected[0] != -1 && squares[row][col] == ARMY.EMPTY) {
-    console.log("check move");
+    console.log("check move", [row, col], selected);
     checkMove(selected, [row, col])
     selected[0] = -1;
     selected[1] = -1;
@@ -140,15 +140,11 @@ function mousePressed() {
 
   selected[0] = row;
   selected[1] = col;
-
-  console.log(row, col, selected);
 }
 
 function checkMove(cur, target) {
   switch(squares[cur[0]][cur[1]]) {
     case ARMY.W_ROOK:
-      console.log(cur, target);
-      
       if (!check_rook_move(cur, target))
         return;
 
@@ -156,6 +152,12 @@ function checkMove(cur, target) {
       squares[cur[0]][cur[1]] = ARMY.EMPTY;
       squares[target[0]][target[1]] = ARMY.W_ROOK;
       break;
+    case ARMY.W_PAWN:
+      if (!check_pawn_move(cur, target))
+        return;
+
+      squares[cur[0]][cur[1]] = ARMY.EMPTY;
+      squares[target[0]][target[1]] = ARMY.W_PAWN;
     default:
       break;
   }
@@ -197,4 +199,12 @@ function check_rook_move(cur, target) {
       }
 
   return true;
+}
+
+function check_pawn_move(cur, target) {
+
+  if (target[0] == cur[0] - 1)
+    return true;
+
+  return false;
 }
