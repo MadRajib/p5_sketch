@@ -158,6 +158,12 @@ function checkMove(cur, target) {
 
       squares[cur[0]][cur[1]] = ARMY.EMPTY;
       squares[target[0]][target[1]] = ARMY.W_PAWN;
+    case ARMY.W_BISHOP:
+      if (!check_bishop_move(cur, target))
+        return;
+
+      squares[cur[0]][cur[1]] = ARMY.W_BISHOP;
+      squares[target[0]][target[1]] = ARMY.W_BISHOP;
     default:
       break;
   }
@@ -207,4 +213,8 @@ function check_pawn_move(cur, target) {
     return true;
 
   return false;
+}
+
+function check_bishop_move(cur, target) {
+  
 }
