@@ -21,6 +21,8 @@ const ROWS = squares.length;
 const CELL_HEIGHT = 50;
 const CELL_WIDTH  = 50;
 
+let selected = [-1,-1]; 
+
 function drawBoard() {
   black = 20;
   white = 220;
@@ -107,5 +109,92 @@ function setup() {
 function draw() {
   background(220);
   drawBoard();
-  noLoop();
+}
+
+function mousePressed() {
+
+  if (mouseX < 0 || mouseY < 0 || mouseY > CELL_HEIGHT * ROWS || mouseX >  CELL_HEIGHT * COLS)
+    return;
+
+  var row = floor(mouseY/CELL_HEIGHT);
+  var col = floor(mouseX/CELL_HEIGHT);
+
+  if (squares[row][col] == -1)
+    return;
+
+  if (selected[0] == row && selected[1] == col) {
+    selected[0] = -1;
+    selected[1] = -1;
+    return;
+  }
+
+  if (selected[0] != -1 && squares[row][col] == ARMY.EMPTY) {
+    console.log("check move");
+    checkMove(selected, [row, col])
+    selected[0] = -1;
+    selected[1] = -1;
+    return;
+  } else if (selected[0] == -1 && squares[row][col] == ARMY.EMPTY) {
+    return;
+  }
+
+  selected[0] = row;
+  selected[1] = col;
+
+  console.log(row, col, selected);
+}
+
+function checkMove(cur, target) {
+  switch(squares[cur[0]][cur[1]]) {
+    case ARMY.W_ROOK:
+      console.log(cur, target);
+      
+      if (!check_rook_move(cur, target))
+        return;
+
+      // check if army inbetween;
+      squares[cur[0]][cur[1]] = ARMY.EMPTY;
+      squares[target[0]][target[1]] = ARMY.W_ROOK;
+      break;
+    default:
+      break;
+  }
+}
+
+function check_rook_move(cur, target) {
+  if (target[0] != cur[0] && target[1] != cur[1])
+        return false;
+
+      if (cur[0] == target[0]) {
+
+        if (target[1] > cur[1]) {
+
+          for (i = cur[1] + 1; i < target[1]; i++) {
+            if (squares[cur[0]][i] != ARMY.EMPTY)
+              return false;
+          }
+
+        } else {
+          for (i = cur[1] - 1; i > target[1]; i--) {
+            if (squares[cur[0]][i] != ARMY.EMPTY)
+              return false;
+          }
+        }
+      } else {
+        if (target[0] > cur[0]) {
+
+          for (i = cur[0] + 1; i < target[0]; i++) {
+            if (squares[i][cur[1]] != ARMY.EMPTY)
+              return false;
+          }
+
+        } else {
+          for (i = cur[1] - 1; i > target[1]; i--) {
+            if (squares[i][cur[1]] != ARMY.EMPTY)
+              return false;
+          }
+        }
+      }
+
+  return true;
 }
