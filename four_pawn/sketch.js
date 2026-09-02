@@ -142,62 +142,62 @@ function mousePressed() {
   selected[1] = col;
 }
 
-function checkMove(cur, target) {
+function checkMove(cur, tar) {
   switch(squares[cur[0]][cur[1]]) {
     case ARMY.W_ROOK:
-      if (!check_rook_move(cur, target))
+      if (!check_rook_move(cur, tar))
         return;
 
       // check if army inbetween;
       squares[cur[0]][cur[1]] = ARMY.EMPTY;
-      squares[target[0]][target[1]] = ARMY.W_ROOK;
+      squares[tar[0]][tar[1]] = ARMY.W_ROOK;
       break;
     case ARMY.W_PAWN:
-      if (!check_pawn_move(cur, target))
+      if (!check_pawn_move(cur, tar))
         return;
 
       squares[cur[0]][cur[1]] = ARMY.EMPTY;
-      squares[target[0]][target[1]] = ARMY.W_PAWN;
+      squares[tar[0]][tar[1]] = ARMY.W_PAWN;
     case ARMY.W_BISHOP:
-      if (!check_bishop_move(cur, target))
+      if (!check_bishop_move(cur, tar))
         return;
 
       squares[cur[0]][cur[1]] = ARMY.W_BISHOP;
-      squares[target[0]][target[1]] = ARMY.W_BISHOP;
+      squares[tar[0]][tar[1]] = ARMY.W_BISHOP;
     default:
       break;
   }
 }
 
-function check_rook_move(cur, target) {
-  if (target[0] != cur[0] && target[1] != cur[1])
+function check_rook_move(cur, tar) {
+  if (tar[0] != cur[0] && tar[1] != cur[1])
         return false;
 
-      if (cur[0] == target[0]) {
+      if (cur[0] == tar[0]) {
 
-        if (target[1] > cur[1]) {
+        if (tar[1] > cur[1]) {
 
-          for (i = cur[1] + 1; i < target[1]; i++) {
+          for (i = cur[1] + 1; i < tar[1]; i++) {
             if (squares[cur[0]][i] != ARMY.EMPTY)
               return false;
           }
 
         } else {
-          for (i = cur[1] - 1; i > target[1]; i--) {
+          for (i = cur[1] - 1; i > tar[1]; i--) {
             if (squares[cur[0]][i] != ARMY.EMPTY)
               return false;
           }
         }
       } else {
-        if (target[0] > cur[0]) {
+        if (tar[0] > cur[0]) {
 
-          for (i = cur[0] + 1; i < target[0]; i++) {
+          for (i = cur[0] + 1; i < tar[0]; i++) {
             if (squares[i][cur[1]] != ARMY.EMPTY)
               return false;
           }
 
         } else {
-          for (i = cur[1] - 1; i > target[1]; i--) {
+          for (i = cur[1] - 1; i > tar[1]; i--) {
             if (squares[i][cur[1]] != ARMY.EMPTY)
               return false;
           }
@@ -207,14 +207,18 @@ function check_rook_move(cur, target) {
   return true;
 }
 
-function check_pawn_move(cur, target) {
+function check_pawn_move(cur, tar) {
 
-  if (target[0] == cur[0] - 1)
+  if (tar[0] == cur[0] - 1)
     return true;
 
   return false;
 }
 
-function check_bishop_move(cur, target) {
-  
+function check_bishop_move(cur, tar) {
+
+  if (cur[0] == tar[0] || cur[1] == tar[1])
+    return false;
+
+  return false;
 }
