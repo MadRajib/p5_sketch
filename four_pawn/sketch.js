@@ -220,5 +220,9 @@ function check_bishop_move(cur, tar) {
   if (cur[0] == tar[0] || cur[1] == tar[1])
     return false;
 
+  // logic to check if inbetween pawn are prent or not
+  // x-- y--     x-- y--
+
+  // x++ y--     x++ y++
   return false;
 }
