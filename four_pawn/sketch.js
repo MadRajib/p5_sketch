@@ -33,7 +33,7 @@ var knight_moves = [
 [[-1,0],[0,1],[0,1]],
 
 // bottom left long
-[[1,0],[0,-1],[0,-1],]
+[[1,0],[0,-1],[0,-1]],
 // bottom right long
 [[1,0],[0,1],[0,1]],
 
@@ -307,6 +307,7 @@ function check_knigth_move(cur, tar) {
     var x = cur[0];
     var y = cur[1];
 
+    console.log("knight move", i, knight_moves[i], x, y, tar);
     for (var j = 0; j < knight_moves[i].length; j++) {
       x += knight_moves[i][j][0];
       y += knight_moves[i][j][1];
