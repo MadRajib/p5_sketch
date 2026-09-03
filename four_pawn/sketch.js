@@ -159,10 +159,12 @@ function checkMove(cur, tar) {
       squares[cur[0]][cur[1]] = ARMY.EMPTY;
       squares[tar[0]][tar[1]] = ARMY.W_PAWN;
     case ARMY.W_BISHOP:
-      if (!check_bishop_move(cur, tar))
+      if (!check_bishop_move(cur, tar)) {
+        console.log("Invalid Move");
         return;
+      }
 
-      squares[cur[0]][cur[1]] = ARMY.W_BISHOP;
+      squares[cur[0]][cur[1]] = ARMY.EMPTY;
       squares[tar[0]][tar[1]] = ARMY.W_BISHOP;
     default:
       break;
@@ -217,12 +219,44 @@ function check_pawn_move(cur, tar) {
 
 function check_bishop_move(cur, tar) {
 
-  if (cur[0] == tar[0] || cur[1] == tar[1])
+  if (abs(cur[0] - tar[0]) != abs(cur[1] - tar[1])) {
+    console.log("not diaglo")
     return false;
+  }
 
   // logic to check if inbetween pawn are prent or not
-  // x-- y--     x-- y--
+  // x-- y--     x-- y++
 
   // x++ y--     x++ y++
-  return false;
+
+  if (tar[0] < cur[0]) { // Upper half
+
+    if (tar[1] < cur[1]) { // left
+      for (i=cur[0] - 1, j=cur[1] - 1; i > tar[0] && j > tar[1]; i--, j--) {
+        if (squares[i][j] != ARMY.EMPTY)
+              return false;
+      }
+    } else {  // right
+      for (i=cur[0] - 1, j=cur[1] + 1; i > tar[0] && j < tar[1]; i--, j++) {
+        if (squares[i][j] != ARMY.EMPTY)
+              return false;
+      }
+    }
+
+  } else {  // Bottom Half
+    if (tar[1] < cur[1]) { // left
+      for (i=cur[0] + 1, j=cur[1] - 1; i < tar[0] && j > tar[1]; i++, j--) {
+        if (squares[i][j] != ARMY.EMPTY)
+              return false;
+      }
+    } else {  // right
+      console.log("right")
+      for (i=cur[0] + 1, j=cur[1] + 1; i < tar[0] && j < tar[1]; i++, j++) {
+        console.log(i,j, squares[i][j]);
+        if (squares[i][j] != ARMY.EMPTY)
+              return false;
+      }
+    }
+  }
+  return true;
 }
