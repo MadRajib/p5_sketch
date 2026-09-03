@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Four_pawns</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/p5.min.js"></script>
+    <style>
+        /* Side-by-side container layout */
+        #main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        /* Border styling to easily visualize the two canvas slots */
+        .canvas-box {
+            border: 2px solid #333;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div id="top-div">
+        <h2>Capture all Four Black Pawns</h2>
+    </div>
+
+    <!-- Container for both canvases side-by-side -->
+    <div id="main-container">
+        <div id="game-canvas" class="canvas-box"></div>
+        <div id="legend-canvas" class="canvas-box"></div>
+    </div>
+
+    <script src="sketch.js"></script>
+    <script src="legend.js"></script>
+</body>
+</html>
