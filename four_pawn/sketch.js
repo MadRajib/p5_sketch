@@ -16,6 +16,34 @@ var squares = [
   [-1,-1,-1, ARMY.W_KNIGHT]
 ];
 
+var knight_moves = [
+// top left
+[[-1,0],[-1,0],[0,-1]],
+// top right
+[[-1,0],[-1,0],[0,1]],
+
+// bottom left
+[[1,0],[1,0],[0,-1]],
+// bottom right
+[[1,0],[1,0],[0,1]],
+
+// top left long
+[[-1,0],[0,-1],[0,-1]],
+// top right long
+[[-1,0],[0,1],[0,1]],
+
+// bottom left long
+[[1,0],[0,-1],[0,-1],]
+// bottom right long
+[[1,0],[0,1],[0,1]],
+
+[[0,-1],[-1,0],[-1,0]],
+[[0,1],[-1,0],[-1,0]],
+
+[[0,-1],[1,0],[1,0]],
+[[0,1],[1,0],[1,0]],
+]
+
 const COLS = squares[0].length;
 const ROWS = squares.length;
 const CELL_HEIGHT = 50;
@@ -158,6 +186,7 @@ function checkMove(cur, tar) {
 
       squares[cur[0]][cur[1]] = ARMY.EMPTY;
       squares[tar[0]][tar[1]] = ARMY.W_PAWN;
+      break;
     case ARMY.W_BISHOP:
       if (!check_bishop_move(cur, tar)) {
         console.log("Invalid Move");
@@ -166,6 +195,16 @@ function checkMove(cur, tar) {
 
       squares[cur[0]][cur[1]] = ARMY.EMPTY;
       squares[tar[0]][tar[1]] = ARMY.W_BISHOP;
+      break;
+    case ARMY.W_KNIGHT:
+      if (!check_knigth_move(cur, tar)) {
+        console.log("Invalid Move");
+        return;
+      }
+
+      squares[cur[0]][cur[1]] = ARMY.EMPTY;
+      squares[tar[0]][tar[1]] = ARMY.W_KNIGHT;
+      break;
     default:
       break;
   }
@@ -259,4 +298,23 @@ function check_bishop_move(cur, tar) {
     }
   }
   return true;
+}
+
+function check_knigth_move(cur, tar) {
+
+  for (var i = 0; i < knight_moves.length; i++) {
+    var x = cur[0];
+    var y = cur[1];
+
+    for (var j = 0; j < knight_moves[i].length; j++) {
+      x += knight_moves[i][j][0];
+      y += knight_moves[i][j][1];
+    }
+
+    if (x == tar[0] && y == tar[1]) {
+      return true;
+    }
+  }
+
+  return false;
 }
