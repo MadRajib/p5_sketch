@@ -130,7 +130,7 @@ function drawBoard() {
 
 function setup() {
   let canvas = createCanvas(CELL_WIDTH * COLS, CELL_HEIGHT * ROWS);
-  canvas.parent('canvas-container');
+  canvas.parent('game-canvas');
 
 }
 
@@ -156,8 +156,8 @@ function mousePressed() {
     return;
   }
 
-  if (selected[0] != -1 && squares[row][col] == ARMY.EMPTY) {
-    console.log("check move", [row, col], selected);
+  if (selected[0] != -1 && squares[row][col] == ARMY.EMPTY || squares[row][col] == ARMY.B_PAWN) {
+    // console.log("check move", [row, col], selected);
     checkMove(selected, [row, col])
     selected[0] = -1;
     selected[1] = -1;
@@ -189,7 +189,7 @@ function checkMove(cur, tar) {
       break;
     case ARMY.W_BISHOP:
       if (!check_bishop_move(cur, tar)) {
-        console.log("Invalid Move");
+        // console.log("Invalid Move");
         return;
       }
 
@@ -198,7 +198,7 @@ function checkMove(cur, tar) {
       break;
     case ARMY.W_KNIGHT:
       if (!check_knigth_move(cur, tar)) {
-        console.log("Invalid Move");
+        // console.log("Invalid Move");
         return;
       }
 
@@ -259,7 +259,7 @@ function check_pawn_move(cur, tar) {
 function check_bishop_move(cur, tar) {
 
   if (abs(cur[0] - tar[0]) != abs(cur[1] - tar[1])) {
-    console.log("not diaglo")
+    // console.log("not diaglo")
     return false;
   }
 
@@ -289,9 +289,9 @@ function check_bishop_move(cur, tar) {
               return false;
       }
     } else {  // right
-      console.log("right")
+      // console.log("right")
       for (i=cur[0] + 1, j=cur[1] + 1; i < tar[0] && j < tar[1]; i++, j++) {
-        console.log(i,j, squares[i][j]);
+        // console.log(i,j, squares[i][j]);
         if (squares[i][j] != ARMY.EMPTY)
               return false;
       }
