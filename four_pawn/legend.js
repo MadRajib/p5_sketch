@@ -45,6 +45,8 @@ const legendSketch = (p) => {
         p.text("To Move the Piece, Select \nthe Peice and then select the\nempty square.", 10, 240);
         p.fill(255, 0, 0);
         p.text("Reload to Reset the Game!", 10, 296);
+
+        p.noLoop();
     };
 
 };
