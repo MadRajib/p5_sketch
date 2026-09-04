@@ -6,8 +6,9 @@ const ARMY = Object.freeze({
   B_PAWN: 1,
   W_PAWN: 2,
   W_BISHOP: 3,
-  W_KNIGHT: 4,
-  W_ROOK: 5,
+  B_KNIGHT: 4,
+  W_KNIGHT: 5,
+  W_ROOK: 6,
 });
 
 const knight_moves = [
@@ -89,6 +90,9 @@ class ChessBoard {
                         break;
                     case ARMY.W_ROOK:
                         this.drawRook(x, y, 0, 255);
+                        break;
+                    case ARMY.B_KNIGHT:
+                        this.drawKnight(x, y, 255, 0);
                         break;
                     case ARMY.W_KNIGHT:
                         this.drawKnight(x, y, 0, 255);
