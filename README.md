@@ -16,3 +16,4 @@
 1. [VineStrings](https://madrajib.github.io/p5_sketch/vineStrings/)
 1. [Snake Trail](https://madrajib.github.io/p5_sketch/snake_trail/)
 1. [Capture ALL Four Pawns](https://madrajib.github.io/p5_sketch/four_pawn/)
+1. [Black Knight puzzle](https://madrajib.github.io/p5_sketch/black_knight_puzzle/)
