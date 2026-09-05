@@ -183,13 +183,18 @@ class ChessBoard {
                 this.squares[tar[0]][tar[1]] = ARMY.W_BISHOP;
                 break;
             case ARMY.W_KNIGHT:
+            case ARMY.B_KNIGHT:
                 if (!this.check_knigth_move(cur, tar)) {
                     // console.log("Invalid Move");
                     return;
                 }
 
+                if (this.squares[cur[0]][cur[1]] == ARMY.W_KNIGHT)
+                    this.squares[tar[0]][tar[1]] = ARMY.W_KNIGHT;
+                else
+                    this.squares[tar[0]][tar[1]] = ARMY.B_KNIGHT;
+                
                 this.squares[cur[0]][cur[1]] = ARMY.EMPTY;
-                this.squares[tar[0]][tar[1]] = ARMY.W_KNIGHT;
                 break;
             default:
                 break;
