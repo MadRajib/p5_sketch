@@ -116,6 +116,11 @@
       <div id="thumb-1" class="thumbnail-container"></div>
       <h3>Black Knight</h3>
     </div>
+
+    <div class="grid-card" onclick="openModal(2)">
+      <div id="thumb-2" class="thumbnail-container"></div>
+      <h3>Move Rook</h3>
+    </div>
   </div>
 
   <div id="sketch-modal" class="modal">
@@ -138,6 +143,7 @@
       B_KNIGHT: 4,
       W_KNIGHT: 5,
       W_ROOK: 6,
+      B_ROOK: 7,
     });
 
     const knight_moves = [
@@ -225,6 +231,14 @@
                 this.drawGlyph(p, x, y, GLYPH.w.R);
                 p.pop();
                 break;
+              case ARMY.B_ROOK:
+                p.push();
+                p.fill('#1C110B');
+                p.stroke('none');
+                p.strokeWeight(0);
+                this.drawGlyph(p, x, y, GLYPH.b.R);
+                p.pop();
+                break;
               case ARMY.B_KNIGHT:
                 p.push();
                 p.fill('#1C110B');
@@ -260,9 +274,17 @@
       checkMove(cur, tar) {
         switch(this.squares[cur[0]][cur[1]]) {
           case ARMY.W_ROOK:
+          case ARMY.B_ROOK:
+      
             if (!this.check_rook_move(cur, tar)) return;
+            
+            if (this.squares[cur[0]][cur[1]] == ARMY.W_ROOK)
+              this.squares[tar[0]][tar[1]] = ARMY.W_ROOK;
+            else
+              this.squares[tar[0]][tar[1]] = ARMY.B_ROOK;
+
             this.squares[cur[0]][cur[1]] = ARMY.EMPTY;
-            this.squares[tar[0]][tar[1]] = ARMY.W_ROOK;
+            
             break;
           case ARMY.W_PAWN:
             if (!this.check_pawn_move(cur, tar)) return;
@@ -357,7 +379,7 @@
       }
 
       check_pawn_move(cur, tar) {
-        if (tar[0] == cur[0] - 1) return true;
+        if (tar[1] == cur[1] && tar[0] == cur[0] - 1) return true;
         return false;
       }
 
@@ -397,11 +419,21 @@
         ]
       },
       {
-        hint: "Move the Black Knight to bottom right corner!",
+        hint: "Move the Black Knight to bottom right Square!",
         layout: [
             [ARMY.B_KNIGHT, ARMY.W_BISHOP, ARMY.W_BISHOP, ARMY.W_BISHOP, ARMY.W_BISHOP, ARMY.W_ROOK],
             [ARMY.W_KNIGHT,ARMY.W_KNIGHT,ARMY.W_KNIGHT,ARMY.W_KNIGHT, ARMY.W_ROOK, ARMY.W_ROOK],
             [-1,-1,-1,-1, ARMY.W_ROOK, ARMY.EMPTY],
+        ]
+      },
+      {
+        hint: "Move Rook to bottom right Square!",
+        layout: [
+            [ARMY.B_ROOK, -1, -1, -1],
+            [ARMY.W_BISHOP,ARMY.W_BISHOP,ARMY.W_BISHOP,ARMY.W_BISHOP],
+            [ARMY.W_KNIGHT,ARMY.W_KNIGHT,ARMY.W_KNIGHT,ARMY.W_KNIGHT],
+            [ARMY.W_PAWN,ARMY.W_PAWN,ARMY.W_PAWN,ARMY.W_PAWN],
+            [-1,-1,-1, ARMY.EMPTY]
         ]
       }
     ];
