@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chess Puzzles</title>
+  <script src="js/p5.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .grid-card {
+      background-color: #2a2a2a;
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s;
+    }
+
+    .grid-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .thumbnail-container {
+      width: 200px;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #111;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .grid-card h3 {
+      margin-top: 10px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    #modal-sketch-hint {
+      color: #ffd700;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 35px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #ff4757;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Chess Puzzles</h1>
+
+  <div class="grid-container">
+    <div class="grid-card" onclick="openModal(0)">
+      <div id="thumb-0" class="thumbnail-container"></div>
+      <h3>Four Black Pawns</h3>
+    </div>
+    <div class="grid-card" onclick="openModal(1)">
+      <div id="thumb-1" class="thumbnail-container"></div>
+      <h3>Black Knight</h3>
+    </div>
+  </div>
+
+  <div id="sketch-modal" class="modal">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <div id="modal-sketch-hint">Hint: bla bla bla</div>
+    <div id="modal-canvas-container"></div>
+  </div>
+
+  <script>
+    const GLYPH = {
+      w: { K:'♔', Q:'♕', R:'♖', B:'♗', N:'♘', P:'♙' },
+      b: { K:'♚', Q:'♛', R:'♜', B:'♝', N:'♞', P:'♟' },
+    };
+
+    const ARMY = Object.freeze({
+      EMPTY: 0,
+      B_PAWN: 1,
+      W_PAWN: 2,
+      W_BISHOP: 3,
+      B_KNIGHT: 4,
+      W_KNIGHT: 5,
+      W_ROOK: 6,
+    });
+
+    const knight_moves = [
+      [[-1,0],[-1,0],[0,-1]],
+      [[-1,0],[-1,0],[0,1]],
+      [[1,0],[1,0],[0,-1]],
+      [[1,0],[1,0],[0,1]],
+      [[-1,0],[0,-1],[0,-1]],
+      [[-1,0],[0,1],[0,1]],
+      [[1,0],[0,-1],[0,-1]],
+      [[1,0],[0,1],[0,1]],
+      [[0,-1],[-1,0],[-1,0]],
+      [[0,1],[-1,0],[-1,0]],
+      [[0,-1],[1,0],[1,0]],
+      [[0,1],[1,0],[1,0]],
+    ];
+
+    class ChessBoard {
+      Squares = [];
+      CELL_DIM = 0;
+      BOARD_DIM = [0, 0];
+      black = 20;
+      white = 220;
+      selected = [-1,-1];
+
+      constructor(squares, cell_dim = 50) {
+        this.squares = squares;
+        this.CELL_DIM = cell_dim;
+        this.BOARD_DIM = [squares.length, squares[0].length];
+      }
+
+      drawBoard(p) {
+        for (let x = 0; x < this.BOARD_DIM[1]; ++x) {
+          for (let y = 0; y < this.BOARD_DIM[0]; ++y) {
+            if (this.squares[y][x] == -1) continue;
+
+            if (x % 2 == 0) {
+              if (y % 2 == 0) {
+                p.fill("#EAD9B8");
+              } else {
+                p.fill("#8B5E3C");
+              }
+            } else {
+              if (y % 2 == 0) {
+                p.fill("#8B5E3C");
+              } else {
+                p.fill("#EAD9B8");
+              }
+            }
+            let x_pos = x * this.CELL_DIM;
+            let y_pos = y * this.CELL_DIM; 
+            
+            p.rect(x_pos, y_pos, this.CELL_DIM, this.CELL_DIM);
+
+            switch (this.squares[y][x]) {
+              case ARMY.B_PAWN:
+                p.push();
+                p.fill('#1C110B');
+                p.stroke('none');
+                p.strokeWeight(0);
+                this.drawGlyph(p, x, y, GLYPH.b.P);
+                p.pop();
+                break;
+              case ARMY.W_PAWN:
+                p.push();
+                p.fill('#FFFDF8');
+                p.stroke('#3A2A1A');
+                p.strokeWeight(1);
+                this.drawGlyph(p, x, y, GLYPH.w.P);
+                p.pop();
+                break;
+              case ARMY.W_BISHOP:
+                p.push();
+                p.fill('#FFFDF8');
+                p.stroke('#3A2A1A');
+                p.strokeWeight(1);
+                this.drawGlyph(p, x, y, GLYPH.w.B);
+                p.pop();
+                break;
+              case ARMY.W_ROOK:
+                p.push();
+                p.fill('#FFFDF8');
+                p.stroke('#3A2A1A');
+                p.strokeWeight(1);
+                this.drawGlyph(p, x, y, GLYPH.w.R);
+                p.pop();
+                break;
+              case ARMY.B_KNIGHT:
+                p.push();
+                p.fill('#1C110B');
+                p.stroke('none');
+                p.strokeWeight(0);
+                this.drawGlyph(p, x, y, GLYPH.b.N);
+                p.pop();
+                break;
+              case ARMY.W_KNIGHT:
+                p.push();
+                p.fill('#FFFDF8');
+                p.stroke('#3A2A1A');
+                p.strokeWeight(1);
+                this.drawGlyph(p, x, y, GLYPH.w.N);
+                p.pop();
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      }
+
+      drawGlyph(p, x, y, char) {
+        let x_pos = x * this.CELL_DIM;
+        let y_pos = y * this.CELL_DIM;
+      
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(this.CELL_DIM * 0.7);
+        p.text(char, x_pos + this.CELL_DIM / 2, y_pos + this.CELL_DIM / 2);
+      }
+
+      checkMove(cur, tar) {
+        switch(this.squares[cur[0]][cur[1]]) {
+          case ARMY.W_ROOK:
+            if (!this.check_rook_move(cur, tar)) return;
+            this.squares[cur[0]][cur[1]] = ARMY.EMPTY;
+            this.squares[tar[0]][tar[1]] = ARMY.W_ROOK;
+            break;
+          case ARMY.W_PAWN:
+            if (!this.check_pawn_move(cur, tar)) return;
+            this.squares[cur[0]][cur[1]] = ARMY.EMPTY;
+            this.squares[tar[0]][tar[1]] = ARMY.W_PAWN;
+            break;
+          case ARMY.W_BISHOP:
+            if (!this.check_bishop_move(cur, tar)) return;
+            this.squares[cur[0]][cur[1]] = ARMY.EMPTY;
+            this.squares[tar[0]][tar[1]] = ARMY.W_BISHOP;
+            break;
+          case ARMY.W_KNIGHT:
+          case ARMY.B_KNIGHT:
+            if (!this.check_knigth_move(cur, tar)) return;
+            if (this.squares[cur[0]][cur[1]] == ARMY.W_KNIGHT)
+              this.squares[tar[0]][tar[1]] = ARMY.W_KNIGHT;
+            else
+              this.squares[tar[0]][tar[1]] = ARMY.B_KNIGHT;
+            
+            this.squares[cur[0]][cur[1]] = ARMY.EMPTY;
+            break;
+          default:
+            break;
+        }
+      }
+
+      check_knigth_move(cur, tar) {
+        for (var i = 0; i < knight_moves.length; i++) {
+          var x = cur[0];
+          var y = cur[1];
+          for (var j = 0; j < knight_moves[i].length; j++) {
+            x += knight_moves[i][j][0];
+            y += knight_moves[i][j][1];
+          }
+          if (x == tar[0] && y == tar[1]) return true;
+        }
+        return false;
+      }
+
+      check_bishop_move(cur, tar) {
+        if (Math.abs(cur[0] - tar[0]) != Math.abs(cur[1] - tar[1])) return false;
+
+        if (tar[0] < cur[0]) {
+          if (tar[1] < cur[1]) {
+            for (let i = cur[0] - 1, j=cur[1] - 1; i > tar[0] && j > tar[1]; i--, j--) {
+              if (this.squares[i][j] != ARMY.EMPTY) return false;
+            }
+          } else {
+            for (let i = cur[0] - 1, j=cur[1] + 1; i > tar[0] && j < tar[1]; i--, j++) {
+              if (this.squares[i][j] != ARMY.EMPTY) return false;
+            }
+          }
+        } else {
+          if (tar[1] < cur[1]) {
+            for (let i = cur[0] + 1, j=cur[1] - 1; i < tar[0] && j > tar[1]; i++, j--) {
+              if (this.squares[i][j] != ARMY.EMPTY) return false;
+            }
+          } else {
+            for (let i = cur[0] + 1, j=cur[1] + 1; i < tar[0] && j < tar[1]; i++, j++) {
+              if (this.squares[i][j] != ARMY.EMPTY) return false;
+            }
+          }
+        }
+        return true;
+      }
+
+      check_rook_move(cur, tar) {
+        if (tar[0] != cur[0] && tar[1] != cur[1]) return false;
+
+        if (cur[0] == tar[0]) {
+          if (tar[1] > cur[1]) {
+            for (let i = cur[1] + 1; i < tar[1]; i++) {
+              if (this.squares[cur[0]][i] != ARMY.EMPTY) return false;
+            }
+          } else {
+            for (let i = cur[1] - 1; i > tar[1]; i--) {
+              if (this.squares[cur[0]][i] != ARMY.EMPTY) return false;
+            }
+          }
+        } else {
+          if (tar[0] > cur[0]) {
+            for (let i = cur[0] + 1; i < tar[0]; i++) {
+              if (this.squares[i][cur[1]] != ARMY.EMPTY) return false;
+            }
+          } else {
+            for (let i = cur[0] - 1; i > tar[0]; i--) {
+              if (this.squares[i][cur[1]] != ARMY.EMPTY) return false;
+            }
+          }
+        }
+        return true;
+      }
+
+      check_pawn_move(cur, tar) {
+        if (tar[0] == cur[0] - 1) return true;
+        return false;
+      }
+
+      movePiece(cur){
+        if (this.squares[cur[0]][cur[1]] == -1) return;   
+
+        if (this.selected[0] == cur[0] && this.selected[1] == cur[1]) {
+          this.selected[0] = -1;
+          this.selected[1] = -1;
+          return;
+        }
+
+        if (this.selected[0] != -1 && (this.squares[cur[0]][cur[1]] == ARMY.EMPTY || this.squares[cur[0]][cur[1]] == ARMY.B_PAWN)) {
+          this.checkMove(this.selected, [cur[0], cur[1]]);
+          this.selected[0] = -1;
+          this.selected[1] = -1;
+          return;
+        } else if (this.selected[0] == -1 && this.squares[cur[0]][cur[1]] == ARMY.EMPTY) {
+          return;
+        }
+
+        this.selected[0] = cur[0];
+        this.selected[1] = cur[1];
+      }
+    }
+
+    const puzzleData = [
+      {
+        hint: "Capture all the Back Pawns with Standard Chess Moves.",
+        layout: [
+            [ARMY.B_PAWN, ARMY.B_PAWN, ARMY.B_PAWN, ARMY.B_PAWN],
+            [-1,-1,-1,-1],
+            [ARMY.W_BISHOP, ARMY.W_BISHOP, ARMY.W_BISHOP, ARMY.W_BISHOP],
+            [ARMY.W_ROOK, ARMY.W_ROOK, ARMY.W_ROOK, ARMY.W_ROOK],
+            [ARMY.W_PAWN, ARMY.W_PAWN, ARMY.W_PAWN, ARMY.EMPTY],
+            [-1,-1,-1, ARMY.W_KNIGHT]
+        ]
+      },
+      {
+        hint: "Move the Black Knight to bottom right corner!",
+        layout: [
+            [ARMY.B_KNIGHT, ARMY.W_BISHOP, ARMY.W_BISHOP, ARMY.W_BISHOP, ARMY.W_BISHOP, ARMY.W_ROOK],
+            [ARMY.W_KNIGHT,ARMY.W_KNIGHT,ARMY.W_KNIGHT,ARMY.W_KNIGHT, ARMY.W_ROOK, ARMY.W_ROOK],
+            [-1,-1,-1,-1, ARMY.W_ROOK, ARMY.EMPTY],
+        ]
+      }
+    ];
+
+    function createChessSketch(layout, cellDim = 50) {
+      return function(p) {
+        let squares = JSON.parse(JSON.stringify(layout));
+        let COLS = squares[0].length;
+        let ROWS = squares.length;
+        let CELL_DIM = cellDim;
+        let chessBoard = new ChessBoard(squares, CELL_DIM);
+
+        p.setup = function() {
+          p.createCanvas(CELL_DIM * COLS, CELL_DIM * ROWS);
+        };
+
+        p.draw = function() {
+          p.background(220);
+          chessBoard.drawBoard(p);
+        };
+
+        p.mousePressed = function() {
+          if (p.mouseX < 0 || p.mouseY < 0 || p.mouseY > CELL_DIM * ROWS || p.mouseX > CELL_DIM * COLS)
+            return;
+
+          var row = p.floor(p.mouseY / CELL_DIM);
+          var col = p.floor(p.mouseX / CELL_DIM);
+
+          chessBoard.movePiece([row, col]);
+        };
+      };
+    }
+
+    window.onload = function() {
+      puzzleData.forEach((puzzle, index) => {
+        new p5(createChessSketch(puzzle.layout, 50), `thumb-${index}`);
+      });
+    };
+
+    let activeModalSketch = null;
+
+    function openModal(index) {
+      const modal = document.getElementById('sketch-modal');
+      const hintDiv = document.getElementById('modal-sketch-hint');
+      const container = document.getElementById('modal-canvas-container');
+      
+      hintDiv.innerText = puzzleData[index].hint;
+
+      container.innerHTML = '';
+      if (activeModalSketch) activeModalSketch.remove();
+
+      modal.classList.add('active');
+      activeModalSketch = new p5(createChessSketch(puzzleData[index].layout, 70), container);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('sketch-modal');
+      modal.classList.remove('active');
+      if (activeModalSketch) {
+        activeModalSketch.remove();
+        activeModalSketch = null;
+      }
+    }
+
+    document.getElementById('sketch-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'sketch-modal') closeModal();
+    });
+  </script>
+</body>
+</html>

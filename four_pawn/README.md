@@ -1,1 +1,0 @@
-# Capure ALL Four Pawns
