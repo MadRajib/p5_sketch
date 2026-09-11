@@ -125,6 +125,10 @@
       <div id="thumb-3" class="thumbnail-container"></div>
       <h3>Swapping Castles</h3>
     </div>
+    <div class="grid-card" onclick="openModal(4)">
+      <div id="thumb-4" class="thumbnail-container"></div>
+      <h3>Four Knights</h3>
+    </div>
   </div>
 
   <div id="sketch-modal" class="modal">
@@ -448,8 +452,20 @@
             [ARMY.B_ROOK, ARMY.EMPTY, ARMY.EMPTY, ARMY.EMPTY, ARMY.W_ROOK],
             [ARMY.B_ROOK, -1, ARMY.EMPTY, -1, ARMY.W_ROOK]
         ]
-      }
+      },
+      
     ];
+      {
+        hint: "Move all the Knights to top Row!",
+        layout: [
+            [ARMY.W_ROOK,ARMY.W_BISHOP, ARMY.W_ROOK, ARMY.W_BISHOP],
+            [ARMY.W_BISHOP, ARMY.W_ROOK, ARMY.W_BISHOP, ARMY.W_ROOK],
+            [ARMY.W_ROOK,ARMY.W_BISHOP, ARMY.W_ROOK, ARMY.W_BISHOP],
+            [ARMY.W_BISHOP, ARMY.W_ROOK, ARMY.W_BISHOP, ARMY.W_ROOK],
+            [-1,-1,-1, ARMY.EMPTY],
+            [ARMY.W_KNIGHT, ARMY.W_KNIGHT, ARMY.W_KNIGHT, ARMY.W_KNIGHT]
+        ]
+      }
 
     function createChessSketch(layout, cellDim = 50) {
       return function(p) {
