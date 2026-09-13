@@ -151,11 +151,14 @@
       EMPTY: 0,
       B_PAWN: 1,
       W_PAWN: 2,
-      W_BISHOP: 3,
-      B_KNIGHT: 4,
-      W_KNIGHT: 5,
-      W_ROOK: 6,
+      B_BISHOP: 3,
+      W_BISHOP: 4,
+      B_KNIGHT: 5,
+      W_KNIGHT: 6,
       B_ROOK: 7,
+      W_ROOK: 8,
+      B_QUEEN: 9,
+      W_QUEEN: 10,
     });
 
     const knight_moves = [
@@ -267,6 +270,22 @@
                 this.drawGlyph(p, x, y, GLYPH.w.N);
                 p.pop();
                 break;
+              case ARMY.B_QUEEN:
+                p.push();
+                p.fill('#1C110B');
+                p.stroke('none');
+                p.strokeWeight(0);
+                this.drawGlyph(p, x, y, GLYPH.b.Q);
+                p.pop();
+                break;
+              case ARMY.W_QUEEN:
+                p.push();
+                p.fill('#FFFDF8');
+                p.stroke('#3A2A1A');
+                p.strokeWeight(1);
+                this.drawGlyph(p, x, y, GLYPH.w.Q);
+                p.pop();
+                break;
               default:
                 break;
             }
@@ -316,6 +335,17 @@
             else
               this.squares[tar[0]][tar[1]] = ARMY.B_KNIGHT;
             
+            this.squares[cur[0]][cur[1]] = ARMY.EMPTY;
+            break;
+          case ARMY.W_QUEEN:
+          case ARMY.B_QUEEN:
+            if (!this.check_queen_move(cur, tar)) return;
+
+            if (this.squares[cur[0]][cur[1]] == ARMY.W_QUEEN)
+              this.squares[tar[0]][tar[1]] = ARMY.W_QUEEN;
+            else
+              this.squares[tar[0]][tar[1]] = ARMY.B_QUEEN;
+
             this.squares[cur[0]][cur[1]] = ARMY.EMPTY;
             break;
           default:
@@ -387,11 +417,25 @@
             }
           }
         }
+
         return true;
       }
 
       check_pawn_move(cur, tar) {
         if (tar[1] == cur[1] && tar[0] == cur[0] - 1) return true;
+        return false;
+      }
+
+      check_queen_move(cur, tar) {
+        if (cur[0] == tar[0] && cur[1] == tar[1])
+          return false;
+
+        if (this.check_bishop_move(cur,tar))
+          return true;
+
+        if (this.check_rook_move(cur,tar))
+          return true;
+
         return false;
       }
 
